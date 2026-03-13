@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillConnect - Professional Network</title>
+
+  <!-- Tailwind CSS (Play CDN for development) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+
+  <nav class="bg-white shadow px-6 py-4 flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-blue-600">SkillConnect</h1>
+    <div id="auth-section">
+      <!-- Auth UI will render here (Login vs Profile snippet) -->
+      <button onclick="document.getElementById('login-modal').classList.remove('hidden')"
+        class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition">Log In</button>
+    </div>
+  </nav>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg w-full max-w-sm">
+      <h2 class="text-xl font-bold mb-4">Login to SkillConnect</h2>
+      <input type="email" id="email" placeholder="Email" class="w-full border p-2 mb-3 rounded"
+        value="test@example.com" />
+      <input type="password" id="password" placeholder="Password" class="w-full border p-2 mb-4 rounded"
+        value="password123" />
+      <div class="flex gap-2">
+        <button onclick="login()" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+        <button onclick="document.getElementById('login-modal').classList.add('hidden')"
+          class="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4">
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- Left Column: Profile & AI Features -->
+      <div>
+        <div class="bg-white shadow p-5 rounded-lg mb-6">
+          <h2 class="text-lg font-bold mb-3 border-b pb-2">Your Profile</h2>
+          <div class="flex items-center gap-3 mb-4">
+            <div id="profile-avatar"
+              class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-xl text-gray-500 font-bold overflow-hidden">
+              JD</div>
+            <div>
+              <p class="font-semibold" id="profile-name">John Doe</p>
+              <p class="text-sm text-gray-500">javascript, react</p>
+              <label class="text-xs text-blue-600 cursor-pointer hover:underline">
+                Upload Photo
+                <input type="file" id="profile-upload" class="hidden" accept="image/*"
+                  onchange="uploadProfilePhoto()" />
+              </label>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h3 class="font-semibold text-sm mb-2">AI Bio Enhancer ✨</h3>
+            <textarea id="bio-input" class="w-full border rounded p-2 text-sm" rows="3"
+              placeholder="I am a developer who likes coding"></textarea>
+            <button onclick="enhanceBio()"
+              class="w-full mt-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-1.5 rounded shadow text-sm hover:opacity-90 transition">
+              Enhance Bio <span id="bio-loader" class="loader hidden"></span>
+            </button>
+            <div id="bio-output-container" class="hidden mt-3">
+              <p id="bio-output" class="text-xs text-gray-700 p-2 bg-gray-50 rounded italic"></p>
+              <button onclick="applyBio()" class="text-xs text-blue-600 mt-1 hover:underline">Apply this bio</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Feed -->
+      <div class="md:col-span-2">
+
+        <!-- Create Post -->
+        <div class="bg-white shadow p-4 rounded-lg mb-6">
+          <h2 class="font-semibold mb-3">Create Post</h2>
+          <textarea id="caption-input"
+            class="w-full border p-3 rounded-lg bg-gray-50 focus:bg-white transition resize-none outline-none focus:ring-1 ring-blue-500"
+            rows="3" placeholder="I learned javascript today"></textarea>
+
+          <div class="flex justify-between items-center mt-3">
+            <div class="flex gap-4 items-center">
+              <button onclick="enhanceCaption()"
+                class="text-sm text-purple-600 font-semibold hover:bg-purple-50 px-3 py-1.5 rounded transition flex items-center gap-1">
+                ✨ AI Enhance <span id="caption-loader" class="loader hidden"
+                  style="width:14px;height:14px;border-width:2px;"></span>
+              </button>
+              <label
+                class="cursor-pointer text-gray-500 hover:text-blue-600 transition flex items-center gap-1 text-sm font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                  </path>
+                </svg>
+                Image
+                <input type="file" id="post-image" class="hidden" accept="image/*" onchange="previewPostImage(this)" />
+              </label>
+              <span id="image-name" class="text-xs text-gray-400 max-w-[100px] truncate"></span>
+            </div>
+            <button onclick="createPost()" id="post-btn"
+              class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 shadow-md transition disabled:opacity-50">Post</button>
+          </div>
+        </div>
+
+        <!-- Feed List -->
+        <div id="feed-container">
+          <!-- Post Template -->
+          <div class="bg-white shadow p-4 rounded-lg mb-4">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+                JD</div>
+              <div>
+                <p class="font-semibold text-sm">John Doe</p>
+                <p class="text-xs text-gray-500">Just now</p>
+              </div>
+            </div>
+            <p class="text-gray-800 text-sm">Passionate software developer expanding skills. I learned JavaScript today
+              and I'm excited about the possibilities! 🚀</p>
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <span
+                class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full border border-green-200">javascript</span>
+            </div>
+            <!-- <img class="rounded-lg mt-3 w-full object-cover max-h-80" src="post-image.jpg"> -->
+            <div class="flex gap-6 mt-4 pt-3 border-t text-sm font-medium text-gray-600">
+              <button class="flex items-center gap-1 hover:text-blue-600 transition"><svg class="w-5 h-5" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5">
+                  </path>
+                </svg> Like</button>
+              <button class="flex items-center gap-1 hover:text-blue-600 transition"><svg class="w-5 h-5" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                  </path>
+                </svg> Comment</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    console.log("SkillConnect Frontend script initialized");
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+    // You can replace these with your actual keys
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBmMkyjXPwp9j_qIcrOY3DmcASJpH5JN8",
+      authDomain: "mini-linkedin-db61c.firebaseapp.com",
+      projectId: "mini-linkedin-db61c",
+      storageBucket: "mini-linkedin-db61c.firebasestorage.app",
+      messagingSenderId: "252883272247",
+      appId: "1:252883272247:web:167d77d38be95b86d2f5b2",
+      measurementId: "G-DMJR90S38D"
+    };
+
+    let auth = null;
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    } catch (e) {
+      console.warn("Firebase not fully configured. Using mock login for UI demonstration.");
+    }
+
+    // API Base URL
+    const API_URL = `http://${window.location.hostname}:5000`;
+    let currentUser = null;
+
+    async function syncProfile() {
+      try {
+        const res = await fetch(`${API_URL}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firebaseUID: "test-uid-123", // Using seed user for demo
+            name: "John Doe",
+            email: "test@example.com"
+          })
+        });
+        currentUser = await res.json();
+
+        // Update UI
+        document.getElementById('profile-name').textContent = currentUser.name;
+        if (currentUser.profileImage) {
+          document.getElementById('profile-avatar').innerHTML = `<img src="${currentUser.profileImage}" class="w-full h-full object-cover" />`;
+        }
+        if (currentUser.bio) {
+          document.getElementById('bio-input').value = currentUser.bio;
+        }
+      } catch (err) {
+        console.error("Profile sync failed:", err);
+      }
+    }
+
+    // Global Functions Exposed to Window for onclick
+    window.login = async function () {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+
+      document.getElementById("login-modal").classList.add("hidden");
+      document.getElementById("auth-section").innerHTML = `<div class="font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">Logged In</div>`;
+
+      try {
+        if (auth && firebaseConfig.apiKey !== "YOUR_KEY" && !firebaseConfig.apiKey.includes("YOUR")) {
+          await signInWithEmailAndPassword(auth, email, pass);
+        }
+        await syncProfile();
+      } catch (err) {
+        console.error(err);
+        alert("Login simulation complete (using test user)");
+        await syncProfile();
+      }
+    };
+
+    window.enhanceBio = async function () {
+      const bioInput = document.getElementById('bio-input').value;
+      if (!bioInput) return;
+
+      const loader = document.getElementById('bio-loader');
+      const outputContainer = document.getElementById('bio-output-container');
+      const outputText = document.getElementById('bio-output');
+
+      loader.classList.remove('hidden');
+      outputContainer.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API_URL}/ai/bio-enhance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bio: bioInput })
+        });
+        const data = await res.json();
+
+        if (data.improved) {
+          outputText.textContent = data.improved;
+          outputContainer.classList.remove('hidden');
+        } else {
+          alert('Error: ' + JSON.stringify(data));
+        }
+      } catch (err) {
+        alert("Make sure the backend is running on port 5000!");
+        console.error(err);
+      } finally {
+        loader.classList.add('hidden');
+      }
+    };
+
+    window.applyBio = function () {
+      const bio = document.getElementById('bio-output').textContent;
+      document.getElementById('bio-input').value = bio;
+      document.getElementById('bio-output-container').classList.add('hidden');
+    };
+
+    window.previewPostImage = function (input) {
+      const nameSpan = document.getElementById('image-name');
+      if (input.files && input.files[0]) {
+        nameSpan.textContent = input.files[0].name;
+      } else {
+        nameSpan.textContent = "";
+      }
+    };
+
+    window.uploadProfilePhoto = async function () {
+      const fileInput = document.getElementById('profile-upload');
+      if (!fileInput.files[0]) return;
+
+      const formData = new FormData();
+      formData.append('profileImage', fileInput.files[0]);
+      formData.append('firebaseUID', 'test-uid-123');
+
+      try {
+        const res = await fetch(`${API_URL}/users`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.profileImage) {
+          document.getElementById('profile-avatar').innerHTML = `<img src="${data.profileImage}" class="w-full h-full object-cover" />`;
+          currentUser = data;
+          alert("Profile photo updated!");
+        }
+      } catch (err) {
+        console.error("Profile upload failed:", err);
+        alert("Upload failed. Check if backend is running.");
+      }
+    };
+
+    window.createPost = async function () {
+      console.log("createPost function triggered");
+      const text = document.getElementById('caption-input').value;
+      const fileInput = document.getElementById('post-image');
+
+      if (!text && !fileInput.files[0]) {
+        alert("Please enter a caption or select an image.");
+        return;
+      }
+
+      const btn = document.getElementById('post-btn');
+      btn.disabled = true;
+      btn.textContent = "Posting...";
+
+      const formData = new FormData();
+      formData.append('caption', text);
+      // Use synced user ID if available, otherwise fallback to seed ID
+      const userId = (currentUser && currentUser._id) ? currentUser._id : "645d9472f88f1c2474f38888";
+      formData.append('userId', userId);
+
+      if (fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+      }
+
+      console.log("Sending POST to /posts", { caption: text, userId });
+
+      try {
+        const res = await fetch(`${API_URL}/posts`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        console.log("Server response:", data);
+
+        if (!res.ok) throw new Error(data.error || "Failed to create post");
+
+        alert("Post created successfully!");
+        await fetchPosts();
+        document.getElementById('caption-input').value = "";
+        document.getElementById('post-image').value = "";
+        document.getElementById('image-name').textContent = "";
+      } catch (err) {
+        console.error("createPost error:", err);
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Post";
+      }
+    };
+
+    window.enhanceCaption = async function () {
+      const captionInput = document.getElementById('caption-input');
+      if (!captionInput.value) return;
+
+      const loader = document.getElementById('caption-loader');
+      loader.classList.remove('hidden');
+
+      try {
+        const res = await fetch(`${API_URL}/ai/caption-enhance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ caption: captionInput.value })
+        });
+        const data = await res.json();
+        if (data.improved) {
+          captionInput.value = data.improved;
+        } else {
+          console.error("AI Enhance failed:", data);
+          alert("AI Enhance failed. Please check backend logs.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Make sure the backend is running!");
+      } finally {
+        loader.classList.add('hidden');
+      }
+    };
+
+    async function fetchPosts() {
+      try {
+        const res = await fetch(`${API_URL}/posts`);
+        const posts = await res.json();
+        const container = document.getElementById('feed-container');
+        container.innerHTML = "";
+
+        posts.forEach(post => {
+          const postEl = document.createElement("div");
+          postEl.className = "bg-white shadow p-4 rounded-lg mb-4";
+          const userName = post.userId ? post.userId.name : "Unknown User";
+          const initials = userName.split(' ').map(n => n[0]).join('');
+          const profileImg = post.userId && post.userId.profileImage
+            ? `<img src="${post.userId.profileImage}" class="w-full h-full object-cover" />`
+            : initials;
+
+          postEl.innerHTML = `
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold overflow-hidden">${profileImg}</div>
+              <div>
+                <p class="font-semibold text-sm">${userName}</p>
+                <p class="text-xs text-gray-500">${new Date(post.createdAt).toLocaleString()}</p>
+              </div>
+            </div>
+            <p class="text-gray-800 text-sm whitespace-pre-wrap">${post.caption}</p>
+            ${post.image ? `<img src="${post.image}" class="rounded-lg mt-3 w-full object-cover max-h-80" />` : ''}
+            ${post.skillsDetected && post.skillsDetected.length ? `
+              <div class="mt-3 flex gap-2 flex-wrap">
+                ${post.skillsDetected.map(skill => `<span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full border border-green-200">${skill}</span>`).join('')}
+              </div>
+            ` : ''}
+            <div class="flex gap-6 mt-4 pt-3 border-t text-sm font-medium text-gray-600">
+              <button class="flex items-center gap-1 hover:text-blue-600 transition">Like</button>
+              <button class="flex items-center gap-1 hover:text-blue-600 transition">Comment</button>
+            </div>
+          `;
+          container.appendChild(postEl);
+        });
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      }
+    }
+
+    window.addEventListener('load', () => {
+      fetchPosts();
+      syncProfile();
+    });
+  </script>
+</body>
+
+</html>
